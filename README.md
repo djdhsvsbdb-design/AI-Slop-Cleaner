@@ -1,22 +1,22 @@
 # AI Slop Cleaner
 
-An MCP server that helps improve low-quality or overly generic AI-generated content while preserving the author's meaning.
+An MCP server that improves generic AI-written text and repairs visibly synthetic-looking image details while preserving the source's meaning and composition.
 
 ## Current status
 
-**MVP: text cleanup.** Image and video analysis are planned, not implemented yet. The tool does not claim to reliably determine whether content was made by AI.
+**MVP: text and image editing.** Video cleanup is planned, not implemented. The tools improve content; they do not reliably determine whether something was created by AI or prove that an image is authentic.
 
-## What it does
+## Features
 
-- Rewrites text to remove repetitive phrasing, generic filler, awkward transitions, and unnecessary verbosity.
-- Preserves factual claims, names, numbers, links, and the original language.
-- Avoids inventing facts or adding unsupported claims.
-- Returns a revised version and a concise change summary.
+- **Text — `clean_text(text, instructions?)`:** removes repetitive phrasing, generic filler, awkward transitions, and unnecessary verbosity. Preserves the original language, facts, names, numbers, and links.
+- **Images — `clean_image(image_base64, mime_type?, instructions?)`:** edits a supplied PNG, JPEG, or WEBP to correct visible glitches, unnatural textures, edges, and lighting. It aims for a natural photographic appearance while preserving the subject, identity, objects, pose, and composition. Returns an edited PNG as base64; the original is not changed.
+
+Image editing is generative and may still alter details unintentionally. Review results before using them.
 
 ## Requirements
 
 - Python 3.11+
-- An OpenAI API key
+- An OpenAI API key with access to the selected text and image models
 - An MCP-compatible client
 
 ## Setup
@@ -32,6 +32,10 @@ python -m ai_slop_cleaner
 ```
 
 On Windows PowerShell, activate the environment with `.venv\\Scripts\\Activate.ps1`.
+
+Optional model overrides:
+- `OPENAI_MODEL` (default: `gpt-4.1-mini`)
+- `OPENAI_IMAGE_MODEL` (default: `gpt-image-1`)
 
 ## MCP client configuration
 
@@ -53,21 +57,16 @@ Example for a local stdio MCP client:
 
 Use your MCP client's documented configuration location. Do not commit API keys.
 
-## Tool
+## Image input/output
 
-### `clean_text(text, instructions?)`
-
-Returns:
-- `cleaned_text`: revised text
-- `changes`: short list of edits
-- `notes`: caveats when facts or meaning may need human review
+The image tool accepts raw base64 image bytes (without a data-URL prefix) and a matching MIME type: `image/png`, `image/jpeg`, or `image/webp`. It returns `image_base64` with `mime_type: image/png`. The client must decode the base64 result to display or save the edited PNG.
 
 ## Roadmap
 
 - [x] MCP text-cleaning tool
-- [ ] Tests and CI
-- [ ] Image review/edit workflow (requires image-capable model and explicit user approval before destructive edits)
-- [ ] Video review/edit workflow
+- [x] MCP photorealistic image-cleanup tool
+- [ ] Automated tests and CI
+- [ ] Video cleanup workflow
 - [ ] Hosted deployment and ChatGPT connector setup
 
 ## Responsible use
